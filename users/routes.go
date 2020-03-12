@@ -33,5 +33,6 @@ func Authenticator(c *gin.Context) (interface{}, error) {
 	return &User{
 		ID:       u.ID,
 		Username: u.Username,
+		Email:    u.Email,
 	}, nil
 }
