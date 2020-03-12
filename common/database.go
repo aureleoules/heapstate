@@ -11,6 +11,10 @@ import (
 // DB holder
 var DB *mongo.Database
 
+const (
+	UsersCollection = "users"
+)
+
 // InitDB database connection
 func InitDB() *mongo.Database {
 	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGODB_URI")))

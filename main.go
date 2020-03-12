@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"os"
 
 	"github.com/aureleoules/heapstack/common"
 	"github.com/joho/godotenv"
@@ -20,5 +21,9 @@ func init() {
 }
 
 func main() {
+	// Init DB connection
 	common.InitDB()
+
+	// Start api
+	Listen(os.Getenv("PORT"))
 }
