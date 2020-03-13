@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/aureleoules/heapstack/common"
+	"github.com/aureleoules/heapstack/router"
 	"github.com/joho/godotenv"
 )
 
@@ -25,5 +26,5 @@ func main() {
 	common.InitDB()
 
 	// Start api
-	Listen(os.Getenv("PORT"))
+	router.Listen(os.Getenv("PORT"))
 }

@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
 	"os"
@@ -19,10 +19,10 @@ var authMiddleware *jwt.GinJWTMiddleware
 
 var version = "v1"
 
-func createRouter() *gin.Engine {
-	router := gin.Default()
+func creater() *gin.Engine {
+	r := gin.Default()
 
-	router.Use(cors.New(cors.Config{
+	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"PUT", "PATCH", "OPTIONS", "POST", "GET", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
@@ -30,8 +30,8 @@ func createRouter() *gin.Engine {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	publicApi = router.Group("/api/" + version)
-	api = router.Group("/api/" + version)
+	publicApi = r.Group("/api/" + version)
+	api = r.Group("/api/" + version)
 
 	publicApi.GET("/", func(c *gin.Context) {
 		c.JSON(200, "helo")
@@ -81,19 +81,11 @@ func createRouter() *gin.Engine {
 
 	api.Use(authMiddleware.MiddlewareFunc())
 
-	return router
+	return r
 }
 
-func handlePub(r *gin.RouterGroup) {
-	users.HandlePub(r.Group("/users"))
-}
-
-func handleProtected(r *gin.RouterGroup) {
-	users.HandleProtected(r.Group("/users"))
-}
-
-// Listen creates web router
+// Listen creates web r
 func Listen(port string) {
-	router := createRouter()
-	router.Run(":" + port)
+	r := creater()
+	r.Run(":" + port)
 }
