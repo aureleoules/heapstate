@@ -13,6 +13,7 @@ var DB *mongo.Database
 
 const (
 	UsersCollection = "users"
+	AppsCollection  = "apps"
 )
 
 // InitDB database connection

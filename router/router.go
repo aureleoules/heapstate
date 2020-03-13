@@ -33,10 +33,6 @@ func creater() *gin.Engine {
 	publicApi = r.Group("/api/" + version)
 	api = r.Group("/api/" + version)
 
-	publicApi.GET("/", func(c *gin.Context) {
-		c.JSON(200, "helo")
-	})
-
 	authMiddleware, _ = jwt.New(&jwt.GinJWTMiddleware{
 		Realm:      "heapstack",
 		Key:        []byte(os.Getenv("SECRET")),
@@ -61,6 +57,11 @@ func creater() *gin.Engine {
 		},
 		Authenticator: users.Authenticator,
 		Authorizator: func(data interface{}, c *gin.Context) bool {
+			claims := jwt.ExtractClaims(c)
+			_, err := primitive.ObjectIDFromHex(claims["id"].(string))
+			if err != nil {
+				return false
+			}
 			return true
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
@@ -74,12 +75,13 @@ func creater() *gin.Engine {
 		TimeFunc:      time.Now,
 	})
 
-	handlePub(publicApi)
-	handleProtected(api)
+	api.Use(authMiddleware.MiddlewareFunc())
+	{
+		handlePub(publicApi)
+		handleProtected(api)
+	}
 
 	publicApi.POST("/authenticate", authMiddleware.LoginHandler)
-
-	api.Use(authMiddleware.MiddlewareFunc())
 
 	return r
 }

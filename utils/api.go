@@ -1,6 +1,8 @@
 package utils
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 // Response parser
 func Response(c *gin.Context, statusCode int, err error, payload interface{}) {
