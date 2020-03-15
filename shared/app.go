@@ -22,12 +22,12 @@ type App struct {
 	Owner            string           `json:"owner" validate:"required" bson:"owner"`
 	Name             string           `json:"name" validate:"required" bson:"name"`
 
-	ContainerID string `json:"container_id" bson:"container_id"`
+	ContainerID string `json:"-" bson:"container_id"`
 
 	CompleteURL string `json:"complete_url" bson:"complete_url"`
 	URL         string `json:"url" bson:"url"`
 
-	LastBuild Build     `json:"last_build" bson:"last_build"`
+	LastBuild Build     `json:"last_build" bson:"-"` // Dynamic
 	CreatedAt time.Time `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
 }

@@ -65,10 +65,9 @@ func fetchAppsHandler(c *gin.Context) {
 }
 
 func fetchAppHandler(c *gin.Context) {
-	userID := utils.ExtractUserID(c)
 	name := c.Param("name")
 
-	app, err := FetchApp(userID, name)
+	app, err := FetchApp(name)
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
@@ -79,10 +78,9 @@ func fetchAppHandler(c *gin.Context) {
 }
 
 func fetchBuildOptionsHandler(c *gin.Context) {
-	userID := utils.ExtractUserID(c)
 	name := c.Param("name")
 
-	app, err := FetchApp(userID, name)
+	app, err := FetchApp(name)
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
@@ -93,10 +91,9 @@ func fetchBuildOptionsHandler(c *gin.Context) {
 }
 
 func deployHandler(c *gin.Context) {
-	userID := utils.ExtractUserID(c)
 	name := c.Param("name")
 
-	app, err := FetchApp(userID, name)
+	app, err := FetchApp(name)
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
@@ -105,4 +102,22 @@ func deployHandler(c *gin.Context) {
 	spew.Dump(app)
 
 	builder.Build(app)
+}
+
+func fetchBuildsHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	id, err := GetAppID(name)
+	if err != nil {
+		utils.Response(c, http.StatusNotFound, err, nil)
+		return
+	}
+
+	builds, err := GetBuilds(id)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+	utils.Response(c, http.StatusOK, nil, builds)
+	return
 }

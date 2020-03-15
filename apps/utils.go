@@ -2,6 +2,7 @@ package apps
 
 import (
 	"context"
+	"log"
 
 	"github.com/aureleoules/heapstack/common"
 	"github.com/aureleoules/heapstack/shared"
@@ -24,11 +25,24 @@ func FetchApps(userID primitive.ObjectID) ([]shared.App, error) {
 	return apps, nil
 }
 
-// FetchApp returns single app by name
-func FetchApp(userID primitive.ObjectID, name string) (shared.App, error) {
+// GetAppID of by name
+func GetAppID(name string) (primitive.ObjectID, error) {
 	r := common.DB.Collection(common.AppsCollection).FindOne(context.Background(), bson.M{
-		"user_id": userID,
-		"name":    name,
+		"name": name,
+	})
+
+	var app shared.App
+	err := r.Decode(&app)
+	if err != nil {
+		return primitive.NilObjectID, err
+	}
+	return app.ID, nil
+}
+
+// FetchApp returns single app by name
+func FetchApp(name string) (shared.App, error) {
+	r := common.DB.Collection(common.AppsCollection).FindOne(context.Background(), bson.M{
+		"name": name,
 	})
 
 	var app shared.App
@@ -37,22 +51,24 @@ func FetchApp(userID primitive.ObjectID, name string) (shared.App, error) {
 		return shared.App{}, err
 	}
 
-	build, err := GetLatestBuild(app.ID)
+	build, _ := GetLatestBuild(app.ID)
 	app.LastBuild = build
 
-	return app, err
+	return app, nil
 }
 
 // GetBuilds of app
 func GetBuilds(appID primitive.ObjectID) ([]shared.Build, error) {
+	log.Println("APP ID = ", appID)
 	r, err := common.DB.Collection(common.BuildsCollection).Find(context.Background(), bson.M{
 		"app_id": appID,
 	})
 	if err != nil {
 		return nil, err
 	}
+
 	var builds []shared.Build
-	err = r.Decode(&builds)
+	err = r.All(context.Background(), &builds)
 	return builds, err
 }
 

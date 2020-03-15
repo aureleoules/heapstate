@@ -10,4 +10,6 @@ func HandleProtected(r *gin.RouterGroup) {
 
 	r.GET("/:name/buildoptions", fetchBuildOptionsHandler)
 	r.POST("/:name/deploy", deployHandler)
+
+	r.GET("/:name/builds", fetchBuildsHandler)
 }
