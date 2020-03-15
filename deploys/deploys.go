@@ -1,5 +1,0 @@
-package deploys
-
-func Queue() {
-
-}

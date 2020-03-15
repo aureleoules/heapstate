@@ -3,13 +3,15 @@ package apps
 import (
 	"net/http"
 
+	"github.com/aureleoules/heapstack/builder"
 	"github.com/aureleoules/heapstack/shared"
 	"github.com/aureleoules/heapstack/utils"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 )
 
 func newAppHandler(c *gin.Context) {
-	var app App
+	var app shared.App
 	err := c.BindJSON(&app)
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
@@ -36,6 +38,7 @@ func newAppHandler(c *gin.Context) {
 
 	// Set app repo url
 	app.URL = baseURL + app.Owner + "/" + app.Name
+	app.CompleteURL = "https://" + app.URL
 
 	app.UserID = utils.ExtractUserID(c)
 
@@ -59,4 +62,47 @@ func fetchAppsHandler(c *gin.Context) {
 
 	utils.Response(c, http.StatusOK, nil, apps)
 	return
+}
+
+func fetchAppHandler(c *gin.Context) {
+	userID := utils.ExtractUserID(c)
+	name := c.Param("name")
+
+	app, err := FetchApp(userID, name)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	utils.Response(c, http.StatusOK, nil, app)
+	return
+}
+
+func fetchBuildOptionsHandler(c *gin.Context) {
+	userID := utils.ExtractUserID(c)
+	name := c.Param("name")
+
+	app, err := FetchApp(userID, name)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	utils.Response(c, http.StatusOK, nil, app.BuildOptions)
+	return
+}
+
+func deployHandler(c *gin.Context) {
+	userID := utils.ExtractUserID(c)
+	name := c.Param("name")
+
+	app, err := FetchApp(userID, name)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	spew.Dump(app)
+
+	builder.Build(app)
 }

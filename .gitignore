@@ -1,3 +1,4 @@
 .env
 heapstack
 heapstack.exe
+tmp/*

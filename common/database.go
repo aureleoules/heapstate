@@ -12,8 +12,9 @@ import (
 var DB *mongo.Database
 
 const (
-	UsersCollection = "users"
-	AppsCollection  = "apps"
+	UsersCollection  = "users"
+	AppsCollection   = "apps"
+	BuildsCollection = "builds"
 )
 
 // InitDB database connection
