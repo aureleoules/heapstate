@@ -7,6 +7,7 @@ import (
 	"github.com/aureleoules/heapstack/common"
 	"github.com/aureleoules/heapstack/shared"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"labix.org/v2/mgo/bson"
 )
 
@@ -60,9 +61,12 @@ func FetchApp(name string) (shared.App, error) {
 // GetBuilds of app
 func GetBuilds(appID primitive.ObjectID) ([]shared.Build, error) {
 	log.Println("APP ID = ", appID)
+	findOptions := options.Find()
+	findOptions.SetSort(bson.M{"created_at": -1})
+
 	r, err := common.DB.Collection(common.BuildsCollection).Find(context.Background(), bson.M{
 		"app_id": appID,
-	})
+	}, findOptions)
 	if err != nil {
 		return nil, err
 	}
@@ -74,9 +78,13 @@ func GetBuilds(appID primitive.ObjectID) ([]shared.Build, error) {
 
 // GetLatestBuild of app
 func GetLatestBuild(appID primitive.ObjectID) (shared.Build, error) {
+
+	findOptions := options.FindOne()
+	findOptions.SetSort(bson.M{"created_at": -1})
+
 	r := common.DB.Collection(common.BuildsCollection).FindOne(context.Background(), bson.M{
 		"app_id": appID,
-	})
+	}, findOptions)
 	var build shared.Build
 	err := r.Decode(&build)
 	return build, err
