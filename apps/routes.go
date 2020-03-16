@@ -12,4 +12,5 @@ func HandleProtected(r *gin.RouterGroup) {
 	r.POST("/:name/deploy", deployHandler)
 
 	r.GET("/:name/builds", fetchBuildsHandler)
+	r.GET("/:name/builds/:id", fetchBuildHandler)
 }

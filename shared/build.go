@@ -12,7 +12,7 @@ import (
 
 // Build struct
 type Build struct {
-	ID    primitive.ObjectID `json:"-" bson:"_id"`
+	ID    primitive.ObjectID `json:"id" bson:"_id"`
 	AppID primitive.ObjectID `json:"app_id" bson:"app_id"`
 
 	Branch        string   `json:"branch" bson:"branch"`

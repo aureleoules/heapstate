@@ -89,3 +89,13 @@ func GetLatestBuild(appID primitive.ObjectID) (shared.Build, error) {
 	err := r.Decode(&build)
 	return build, err
 }
+
+// GetBuild bu id
+func GetBuild(buildID primitive.ObjectID) (shared.Build, error) {
+	r := common.DB.Collection(common.BuildsCollection).FindOne(context.Background(), bson.M{
+		"_id": buildID,
+	})
+	var build shared.Build
+	err := r.Decode(&build)
+	return build, err
+}

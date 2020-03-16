@@ -1,6 +1,7 @@
 package apps
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/aureleoules/heapstack/builder"
@@ -8,6 +9,7 @@ import (
 	"github.com/aureleoules/heapstack/utils"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func newAppHandler(c *gin.Context) {
@@ -119,5 +121,23 @@ func fetchBuildsHandler(c *gin.Context) {
 		return
 	}
 	utils.Response(c, http.StatusOK, nil, builds)
+	return
+}
+
+func fetchBuildHandler(c *gin.Context) {
+	id := c.Param("id")
+
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		utils.Response(c, http.StatusNotAcceptable, errors.New("invalid id"), nil)
+		return
+	}
+
+	build, err := GetBuild(objectID)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+	utils.Response(c, http.StatusOK, nil, build)
 	return
 }

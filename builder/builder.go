@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/aureleoules/heapstack/shared"
+	"github.com/aureleoules/heapstack/utils"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
@@ -148,6 +149,7 @@ func Build(app shared.App) error {
 	}
 	resp, err := cli.ImageBuild(context.Background(), dockerBuildContext, opt)
 	if err != nil {
+		fmt.Println(err)
 		build.SetStatus(shared.BuildError, "Could not build Docker image.")
 
 		return err
@@ -166,13 +168,16 @@ func Build(app shared.App) error {
 		}
 
 		matches := reg.FindStringSubmatch(string(n))
-		log.Println(string(n))
-		log.Println(matches)
 		if len(matches) < 2 {
 			continue
 		}
-		log.Println(matches[1])
-		build.Log(matches[1])
+
+		str := utils.UnescapeString(matches[1])
+		if str == "\n" {
+			continue
+		}
+
+		build.Log(str)
 	}
 
 	build.SetStatus(shared.Building, "")
