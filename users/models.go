@@ -14,12 +14,24 @@ import (
 type User struct {
 	ID primitive.ObjectID `json:"id" bson:"_id"`
 
+	Credits uint64 `json:"credits" bson:"credits"`
+
 	Username string `json:"username" bson:"username"`
 	Email    string `json:"email" bson:"email" validate:"required,email"`
 	Password string `json:"password" bson:"password" validate:"required"`
 
 	CreatedAt time.Time `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
+}
+
+// Profile struct
+type Profile struct {
+	ID        primitive.ObjectID `json:"id"`
+	Username  string             `json:"username"`
+	Email     string             `json:"email"`
+	Credits   uint64             `json:"credits"`
+	UpdatedAt time.Time          `json:"updated_at"`
+	CreatedAt time.Time          `json:"created_at"`
 }
 
 // Save to db
@@ -45,15 +57,12 @@ func (u *User) HashPassword() {
 }
 
 // Public returns public data
-func (u *User) Public() interface{} {
-	type publicData struct {
-		Username  string    `json:"username"`
-		Email     string    `json:"email"`
-		UpdatedAt time.Time `json:"updated_at"`
-	}
-	return publicData{
+func (u *User) Public() Profile {
+	return Profile{
+		ID:        u.ID,
 		Username:  u.Username,
 		Email:     u.Email,
 		UpdatedAt: u.UpdatedAt,
+		Credits:   u.Credits,
 	}
 }

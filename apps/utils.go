@@ -59,10 +59,11 @@ func FetchApp(name string) (shared.App, error) {
 }
 
 // GetBuilds of app
-func GetBuilds(appID primitive.ObjectID) ([]shared.Build, error) {
+func GetBuilds(appID primitive.ObjectID, limit int) ([]shared.Build, error) {
 	log.Println("APP ID = ", appID)
 	findOptions := options.Find()
 	findOptions.SetSort(bson.M{"created_at": -1})
+	findOptions.SetLimit(int64(limit))
 
 	r, err := common.DB.Collection(common.BuildsCollection).Find(context.Background(), bson.M{
 		"app_id": appID,

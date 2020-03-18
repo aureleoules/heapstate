@@ -3,11 +3,11 @@ package apps
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/aureleoules/heapstack/builder"
 	"github.com/aureleoules/heapstack/shared"
 	"github.com/aureleoules/heapstack/utils"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -62,6 +62,10 @@ func fetchAppsHandler(c *gin.Context) {
 		return
 	}
 
+	for i := range apps {
+		apps[i].LastBuild, err = GetLatestBuild(apps[i].ID)
+	}
+
 	utils.Response(c, http.StatusOK, nil, apps)
 	return
 }
@@ -101,13 +105,18 @@ func deployHandler(c *gin.Context) {
 		return
 	}
 
-	spew.Dump(app)
-
 	builder.Build(app)
 }
 
 func fetchBuildsHandler(c *gin.Context) {
 	name := c.Param("name")
+
+	limitStr := c.DefaultQuery("limit", "4")
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		utils.Response(c, http.StatusNotAcceptable, errors.New("invalid limit"), nil)
+		return
+	}
 
 	id, err := GetAppID(name)
 	if err != nil {
@@ -115,7 +124,7 @@ func fetchBuildsHandler(c *gin.Context) {
 		return
 	}
 
-	builds, err := GetBuilds(id)
+	builds, err := GetBuilds(id, limit)
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
