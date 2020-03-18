@@ -44,7 +44,7 @@ const (
 )
 
 type ContainerOptions struct {
-	MaxRAM int `json:"max_ram" bson:"max_ram"`
+	MaxRAM float64 `json:"max_ram" bson:"max_ram"`
 }
 
 // SetContainerID util function

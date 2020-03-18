@@ -1,13 +1,18 @@
 package apps
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/aureleoules/heapstack/builder"
+	"github.com/aureleoules/heapstack/common"
 	"github.com/aureleoules/heapstack/shared"
 	"github.com/aureleoules/heapstack/utils"
+	"github.com/docker/docker/api/types"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -68,6 +73,39 @@ func fetchAppsHandler(c *gin.Context) {
 
 	utils.Response(c, http.StatusOK, nil, apps)
 	return
+}
+
+func fetchStats(c *gin.Context) {
+	name := c.Param("name")
+
+	app, err := FetchApp(name)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	response, err := common.DockerClient.ContainerStats(context.Background(), app.ContainerID, false)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(response.Body)
+
+	var stats types.StatsJSON
+	err = json.Unmarshal(buf.Bytes(), &stats)
+
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	utils.Response(c, http.StatusOK, nil, shared.ContainerStats{
+		RAMUsage: float64(stats.MemoryStats.Usage+stats.MemoryStats.Stats["cache"]) / 1024 / 1024 / 8,
+		MaxRAM:   app.ContainerOptions.MaxRAM,
+		CPU:      utils.CalculateCPUPercentUnix(0, 0, &stats),
+	})
+
 }
 
 func fetchAppHandler(c *gin.Context) {

@@ -11,29 +11,17 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/aureleoules/heapstack/common"
 	"github.com/aureleoules/heapstack/shared"
 	"github.com/aureleoules/heapstack/utils"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
-	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/mholt/archiver"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 )
-
-var cli *client.Client
-
-func init() {
-	var err error
-	cli, err = client.NewEnvClient()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Initialized Docker client")
-
-}
 
 // CloneRepository util
 func CloneRepository(url string, branch string, dir string) (*git.Repository, error) {
@@ -147,7 +135,7 @@ func Build(app shared.App) error {
 		Dockerfile:     "Dockerfile",
 		Tags:           []string{app.Name},
 	}
-	resp, err := cli.ImageBuild(context.Background(), dockerBuildContext, opt)
+	resp, err := common.DockerClient.ImageBuild(context.Background(), dockerBuildContext, opt)
 	if err != nil {
 		fmt.Println(err)
 		build.SetStatus(shared.BuildError, "Could not build Docker image.")
@@ -183,7 +171,7 @@ func Build(app shared.App) error {
 	build.SetStatus(shared.Building, "")
 
 	/* Delete previous docker container */
-	err = cli.ContainerRemove(context.Background(), app.ContainerID, types.ContainerRemoveOptions{
+	err = common.DockerClient.ContainerRemove(context.Background(), app.ContainerID, types.ContainerRemoveOptions{
 		Force: true,
 	})
 	if err != nil {
@@ -191,7 +179,7 @@ func Build(app shared.App) error {
 	}
 
 	exposedPorts := map[nat.Port]struct{}{"80/tcp": {}}
-	dockerResponse, err := cli.ContainerCreate(context.Background(), &container.Config{
+	dockerResponse, err := common.DockerClient.ContainerCreate(context.Background(), &container.Config{
 		Image:        app.Name,
 		ExposedPorts: exposedPorts,
 	}, &container.HostConfig{
@@ -214,7 +202,7 @@ func Build(app shared.App) error {
 	}
 	log.Println("Running", dockerResponse.ID)
 
-	err = cli.ContainerStart(context.Background(), dockerResponse.ID, types.ContainerStartOptions{})
+	err = common.DockerClient.ContainerStart(context.Background(), dockerResponse.ID, types.ContainerStartOptions{})
 	if err != nil {
 		build.SetStatus(shared.DeployError, "Could not start Docker container.")
 

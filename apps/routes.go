@@ -6,6 +6,7 @@ import "github.com/gin-gonic/gin"
 func HandleProtected(r *gin.RouterGroup) {
 	r.POST("/", newAppHandler)
 	r.GET("/:name", fetchAppHandler)
+	r.GET("/:name/stats", fetchStats)
 	r.GET("/", fetchAppsHandler)
 
 	r.GET("/:name/buildoptions", fetchBuildOptionsHandler)

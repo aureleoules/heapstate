@@ -1,4 +1,6 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/KyleBanks/dockerstats v0.0.0-20180213183355-b5fec062e953 h1:49R6gyeOTYoHC61f7K2ucRj/ywMCIhc6qUarXJktutU=
+github.com/KyleBanks/dockerstats v0.0.0-20180213183355-b5fec062e953/go.mod h1:93Q/nFFqAIISN2SRl4XjArIA0a6Bla+PfjP/ixU5BDw=
 github.com/Microsoft/go-winio v0.4.14 h1:+hMXMk01us9KgxGb7ftKQt2Xpf5hH/yky+TDA+qxleU=
 github.com/Microsoft/go-winio v0.4.14/go.mod h1:qXqCSQ3Xa7+6tgxaGTIe4Kpcdsi+P8jBhyzoq1bpyYA=
 github.com/alcortesm/tgz v0.0.0-20161220082320-9c5fe88206d7 h1:uSoVVbwJiQipAclBbw+8quDsfcvFjOpI5iCf4p/cqCs=

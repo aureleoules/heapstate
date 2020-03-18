@@ -3,6 +3,7 @@ module github.com/aureleoules/heapstack
 go 1.14
 
 require (
+	github.com/KyleBanks/dockerstats v0.0.0-20180213183355-b5fec062e953 // indirect
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/appleboy/gin-jwt v2.5.0+incompatible
 	github.com/appleboy/gin-jwt/v2 v2.6.3
