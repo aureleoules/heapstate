@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/aureleoules/heapstack/builder"
-	"github.com/aureleoules/heapstack/common"
-	"github.com/aureleoules/heapstack/shared"
-	"github.com/aureleoules/heapstack/utils"
+	"github.com/aureleoules/heapstate/builder"
+	"github.com/aureleoules/heapstate/common"
+	"github.com/aureleoules/heapstate/shared"
+	"github.com/aureleoules/heapstate/utils"
 	"github.com/docker/docker/api/types"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -186,5 +186,47 @@ func fetchBuildHandler(c *gin.Context) {
 		return
 	}
 	utils.Response(c, http.StatusOK, nil, build)
+	return
+}
+
+func fetchLogsHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	app, err := FetchApp(name)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	response, err := common.DockerClient.ContainerLogs(context.Background(), app.ContainerID, types.ContainerLogsOptions{
+		ShowStdout: true,
+		ShowStderr: true,
+	})
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(response)
+
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	utils.Response(c, http.StatusOK, nil, buf.String())
+}
+
+func fetchContainerOptionsHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	app, err := FetchApp(name)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	utils.Response(c, http.StatusOK, nil, app.ContainerOptions)
 	return
 }

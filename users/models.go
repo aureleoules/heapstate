@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/aureleoules/heapstack/common"
+	"github.com/aureleoules/heapstate/common"
 	"github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
@@ -64,5 +64,6 @@ func (u *User) Public() Profile {
 		Email:     u.Email,
 		UpdatedAt: u.UpdatedAt,
 		Credits:   u.Credits,
+		CreatedAt: u.CreatedAt,
 	}
 }

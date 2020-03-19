@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/aureleoules/heapstack/users"
+	"github.com/aureleoules/heapstate/users"
 	"github.com/gin-gonic/gin"
 )
 

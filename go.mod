@@ -1,4 +1,4 @@
-module github.com/aureleoules/heapstack
+module github.com/aureleoules/heapstate
 
 go 1.14
 

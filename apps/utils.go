@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/aureleoules/heapstack/common"
-	"github.com/aureleoules/heapstack/shared"
+	"github.com/aureleoules/heapstate/common"
+	"github.com/aureleoules/heapstate/shared"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"labix.org/v2/mgo/bson"

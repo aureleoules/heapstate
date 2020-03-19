@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/aureleoules/heapstack/utils"
+	"github.com/aureleoules/heapstate/utils"
 	"github.com/gin-gonic/gin"
 )
 

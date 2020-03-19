@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/aureleoules/heapstack/common"
-	"github.com/aureleoules/heapstack/router"
+	"github.com/aureleoules/heapstate/common"
+	"github.com/aureleoules/heapstate/router"
 	"github.com/joho/godotenv"
 )
 

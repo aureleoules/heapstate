@@ -4,7 +4,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/aureleoules/heapstack/users"
+	"github.com/aureleoules/heapstate/users"
 	"github.com/gin-contrib/cors"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -34,7 +34,7 @@ func creater() *gin.Engine {
 	api = r.Group("/api/" + version)
 
 	authMiddleware, _ = jwt.New(&jwt.GinJWTMiddleware{
-		Realm:      "heapstack",
+		Realm:      "heapstate",
 		Key:        []byte(os.Getenv("SECRET")),
 		Timeout:    time.Hour * 12,
 		MaxRefresh: time.Hour * 12,

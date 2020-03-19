@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	jwt "github.com/appleboy/gin-jwt"
-	"github.com/aureleoules/heapstack/utils"
+	"github.com/aureleoules/heapstate/utils"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )

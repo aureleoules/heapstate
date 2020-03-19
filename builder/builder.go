@@ -11,9 +11,9 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/aureleoules/heapstack/common"
-	"github.com/aureleoules/heapstack/shared"
-	"github.com/aureleoules/heapstack/utils"
+	"github.com/aureleoules/heapstate/common"
+	"github.com/aureleoules/heapstate/shared"
+	"github.com/aureleoules/heapstate/utils"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"

@@ -3,7 +3,7 @@ package users
 import (
 	"context"
 
-	"github.com/aureleoules/heapstack/common"
+	"github.com/aureleoules/heapstate/common"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"gopkg.in/mgo.v2/bson"
 )
