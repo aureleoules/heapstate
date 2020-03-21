@@ -7,6 +7,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/aureleoules/heapstate/builder"
 	"github.com/aureleoules/heapstate/common"
@@ -75,7 +76,7 @@ func fetchAppsHandler(c *gin.Context) {
 	return
 }
 
-func fetchStats(c *gin.Context) {
+func fetchStatsHandler(c *gin.Context) {
 	name := c.Param("name")
 
 	app, err := FetchApp(name)
@@ -228,5 +229,64 @@ func fetchContainerOptionsHandler(c *gin.Context) {
 	}
 
 	utils.Response(c, http.StatusOK, nil, app.ContainerOptions)
+	return
+}
+
+func startHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	app, err := FetchApp(name)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	err = common.DockerClient.ContainerStart(context.Background(), app.ContainerID, types.ContainerStartOptions{})
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	utils.Response(c, http.StatusOK, nil, nil)
+	return
+}
+
+func restartHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	app, err := FetchApp(name)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	timeout := time.Duration(10 * time.Second)
+	err = common.DockerClient.ContainerRestart(context.Background(), app.ContainerID, &timeout)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	utils.Response(c, http.StatusOK, nil, nil)
+	return
+}
+
+func stopHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	app, err := FetchApp(name)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	timeout := time.Duration(10 * time.Second)
+	err = common.DockerClient.ContainerStop(context.Background(), app.ContainerID, &timeout)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	utils.Response(c, http.StatusOK, nil, nil)
 	return
 }
