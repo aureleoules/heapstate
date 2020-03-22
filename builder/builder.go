@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strconv"
 	"time"
 
 	"github.com/aureleoules/heapstate/common"
@@ -19,6 +20,7 @@ import (
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/go-connections/nat"
 	"github.com/mholt/archiver"
+	"github.com/phayes/freeport"
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 )
@@ -65,9 +67,7 @@ func Clean() {
 		log.Fatal(err)
 	}
 	for _, f := range files {
-		log.Println(f.Name())
-		err := os.RemoveAll(dir + "/" + f.Name())
-		log.Println(err)
+		os.RemoveAll(dir + "/" + f.Name())
 	}
 }
 
@@ -82,6 +82,7 @@ func Build(app shared.App) error {
 
 	build.Status = shared.Building
 	build.Create()
+	app.SetState(shared.Stopped)
 
 	Clean()
 	/* Clone repo */
@@ -179,12 +180,22 @@ func Build(app shared.App) error {
 	}
 
 	exposedPorts := map[nat.Port]struct{}{"80/tcp": {}}
+
+	port, err := freeport.GetFreePort()
+	if err != nil {
+		build.SetStatus(shared.BuildError, "Could not find available port.")
+		return err
+	}
+
 	dockerResponse, err := common.DockerClient.ContainerCreate(context.Background(), &container.Config{
 		Image:        app.Name,
 		ExposedPorts: exposedPorts,
 	}, &container.HostConfig{
 		PortBindings: nat.PortMap{
-			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: "5000"}},
+			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: strconv.Itoa(port)}},
+		},
+		Resources: container.Resources{
+			Memory: app.ContainerOptions.MaxRAM,
 		},
 	}, &network.NetworkingConfig{}, app.Name)
 
@@ -210,6 +221,7 @@ func Build(app shared.App) error {
 	}
 
 	build.SetStatus(shared.Deployed, "")
+	app.SetState(shared.Running)
 
 	return nil
 }

@@ -22,6 +22,8 @@ func HandleProtected(r *gin.RouterGroup) {
 	r.GET("/:name/logs", fetchLogsHandler)
 
 	r.GET("/:name/containeroptions", fetchContainerOptionsHandler)
+	r.PUT("/:name/containeroptions", saveContainerOptionsHandler)
+
 	r.POST("/:name/deploy", deployHandler)
 
 }

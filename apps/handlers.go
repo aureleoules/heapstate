@@ -102,7 +102,7 @@ func fetchStatsHandler(c *gin.Context) {
 	}
 
 	utils.Response(c, http.StatusOK, nil, shared.ContainerStats{
-		RAMUsage: float64(stats.MemoryStats.Usage+stats.MemoryStats.Stats["cache"]) / 1024 / 1024 / 8,
+		RAMUsage: int64(stats.MemoryStats.Usage + stats.MemoryStats.Stats["cache"]),
 		MaxRAM:   app.ContainerOptions.MaxRAM,
 		CPU:      utils.CalculateCPUPercentUnix(0, 0, &stats),
 	})
@@ -241,7 +241,8 @@ func startHandler(c *gin.Context) {
 		return
 	}
 
-	err = common.DockerClient.ContainerStart(context.Background(), app.ContainerID, types.ContainerStartOptions{})
+	err = builder.Build(app)
+
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
@@ -259,6 +260,7 @@ func restartHandler(c *gin.Context) {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
 	}
+	app.SetState(shared.Stopped)
 
 	timeout := time.Duration(10 * time.Second)
 	err = common.DockerClient.ContainerRestart(context.Background(), app.ContainerID, &timeout)
@@ -266,6 +268,7 @@ func restartHandler(c *gin.Context) {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
 	}
+	app.SetState(shared.Running)
 
 	utils.Response(c, http.StatusOK, nil, nil)
 	return
@@ -280,8 +283,36 @@ func stopHandler(c *gin.Context) {
 		return
 	}
 
-	timeout := time.Duration(10 * time.Second)
-	err = common.DockerClient.ContainerStop(context.Background(), app.ContainerID, &timeout)
+	err = common.DockerClient.ContainerRemove(context.Background(), app.ContainerID, types.ContainerRemoveOptions{
+		Force: true,
+	})
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	app.SetState(shared.Stopped)
+	utils.Response(c, http.StatusOK, nil, nil)
+
+	return
+}
+
+func saveContainerOptionsHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	var options shared.ContainerOptions
+	err := c.BindJSON(&options)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	app, err := FetchApp(name)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+	err = app.SaveContainerOptions(options)
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return

@@ -10,6 +10,13 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+type State string
+
+const (
+	Stopped State = "stopped"
+	Running State = "running"
+)
+
 // App struct
 type App struct {
 	ID     primitive.ObjectID `json:"id" bson:"_id"`
@@ -23,6 +30,7 @@ type App struct {
 	Name             string           `json:"name" validate:"required" bson:"name"`
 
 	ContainerID string `json:"-" bson:"container_id"`
+	State       State  `json:"state" bson:"state"`
 
 	CompleteURL string `json:"complete_url" bson:"complete_url"`
 	URL         string `json:"url" bson:"url"`
@@ -44,7 +52,7 @@ const (
 )
 
 type ContainerOptions struct {
-	MaxRAM float64 `json:"max_ram" bson:"max_ram"`
+	MaxRAM int64 `json:"max_ram" bson:"max_ram"`
 }
 
 // SetContainerID util function
@@ -54,6 +62,30 @@ func (app *App) SetContainerID(id string) error {
 	}, bson.M{
 		"$set": bson.M{
 			"container_id": id,
+		},
+	})
+	return err
+}
+
+// SetState : set app state
+func (app *App) SetState(state State) error {
+	_, err := common.DB.Collection(common.AppsCollection).UpdateOne(context.Background(), bson.M{
+		"_id": app.ID,
+	}, bson.M{
+		"$set": bson.M{
+			"state": state,
+		},
+	})
+	return err
+}
+
+// SaveContainerOptions : set app container options
+func (app *App) SaveContainerOptions(options ContainerOptions) error {
+	_, err := common.DB.Collection(common.AppsCollection).UpdateOne(context.Background(), bson.M{
+		"_id": app.ID,
+	}, bson.M{
+		"$set": bson.M{
+			"container_options": options,
 		},
 	})
 	return err
