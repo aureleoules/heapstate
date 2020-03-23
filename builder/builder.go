@@ -114,7 +114,7 @@ func Build(app shared.App) error {
 	tarballDir := os.Getenv("TARBALL_DIR") + "/" + app.Name + ".tar"
 	err = MakeTarball(repoDir, tarballDir)
 	if err != nil {
-
+		log.Println(err)
 		build.SetStatus(shared.BuildError, "Could not build tarball.")
 
 		return err
@@ -176,6 +176,7 @@ func Build(app shared.App) error {
 		Force: true,
 	})
 	if err != nil {
+		fmt.Println(err)
 		fmt.Println("Could not kill container,", err)
 	}
 
@@ -199,15 +200,15 @@ func Build(app shared.App) error {
 		},
 	}, &network.NetworkingConfig{}, app.Name)
 
-	err = app.SetContainerID(dockerResponse.ID)
 	if err != nil {
-		build.SetStatus(shared.BuildError, "Could not set container ID.")
-
+		build.SetStatus(shared.DeployError, "Could not deploy Docker container.")
+		fmt.Println(err)
 		return err
 	}
 
+	err = app.SetContainerID(dockerResponse.ID)
 	if err != nil {
-		build.SetStatus(shared.DeployError, "Could not deploy Docker container.")
+		build.SetStatus(shared.BuildError, "Could not set container ID.")
 
 		return err
 	}

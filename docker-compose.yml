@@ -1,0 +1,45 @@
+version: '3'
+
+networks:
+    internal:
+        driver: bridge
+
+    traefik:
+        driver: bridge
+
+services:
+    app:
+        container_name: "heapstate"
+        build: .
+        ports:
+            - "9000:9000"
+        networks:
+            - traefik
+            - internal
+        labels:
+            - traefik.backend=heapstate
+            - traefik.frontend.rule=Host:api.heapstate.com
+            - traefik.docker.network=traefik
+            - traefik.port=9000
+        depends_on:
+            - mongodb
+            - traefik
+    mongodb:
+        image: mvertes/alpine-mongo
+        labels:
+            - traefik.enable=false
+        container_name: "mongo"
+    traefik:
+        image: "traefik:v2.1"
+        container_name: "traefik"
+        command:
+             - "--api.insecure=true"
+             - "--providers.docker=true"
+             - "--providers.docker.exposedbydefault=false"
+             - "--entrypoints.web.address=:80"
+        ports:
+            - "80:80"
+            - "8080:8080"
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
