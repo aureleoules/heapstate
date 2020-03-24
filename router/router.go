@@ -30,8 +30,8 @@ func creater() *gin.Engine {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	publicApi = r.Group("/api/" + version)
-	api = r.Group("/api/" + version)
+	publicApi = r.Group("/")
+	api = r.Group("/")
 
 	authMiddleware, _ = jwt.New(&jwt.GinJWTMiddleware{
 		Realm:      "heapstate",

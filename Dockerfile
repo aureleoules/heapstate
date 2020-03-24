@@ -28,7 +28,7 @@ COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/group /etc/group
 COPY --from=builder /go/bin/heapstate /go/bin/heapstate
 
-USER heapstate:heapstate
+# USER heapstate:heapstate
 
 ENTRYPOINT ["/go/bin/heapstate"]
-
+EXPOSE 80 443

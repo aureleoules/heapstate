@@ -1,45 +1,36 @@
-version: '3'
-
-networks:
-    internal:
-        driver: bridge
-
-    traefik:
-        driver: bridge
+version: "3.3"
 
 services:
-    app:
-        container_name: "heapstate"
-        build: .
-        ports:
-            - "9000:9000"
-        networks:
-            - traefik
-            - internal
-        labels:
-            - traefik.backend=heapstate
-            - traefik.frontend.rule=Host:api.heapstate.com
-            - traefik.docker.network=traefik
-            - traefik.port=9000
-        depends_on:
-            - mongodb
-            - traefik
-    mongodb:
-        image: mvertes/alpine-mongo
-        labels:
-            - traefik.enable=false
-        container_name: "mongo"
-    traefik:
-        image: "traefik:v2.1"
-        container_name: "traefik"
-        command:
-             - "--api.insecure=true"
-             - "--providers.docker=true"
-             - "--providers.docker.exposedbydefault=false"
-             - "--entrypoints.web.address=:80"
-        ports:
-            - "80:80"
-            - "8080:8080"
-        volumes:
-            - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
+  traefik:
+    image: "traefik:v2.1"
+    container_name: "traefik"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      #- "--certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.myresolver.acme.email=ioaurele@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  heapstate:
+    build: .
+    env_file:
+        - .env
+    container_name: "heapstate"
+    labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.heapstate.rule=Host(`api.heapstate.com`)"
+        - "traefik.http.routers.heapstate.entrypoints=websecure"
+        - "traefik.http.routers.heapstate.tls.certresolver=myresolver"
