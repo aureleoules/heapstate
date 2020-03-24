@@ -9,6 +9,7 @@ services:
         - '9000:9000'
     volumes:
         - ./:/app
+        - "/var/run/docker.sock:/var/run/docker.sock:ro"
     env_file:
         - .env
     container_name: "heapstate-dev"
@@ -17,3 +18,8 @@ services:
         - "traefik.http.routers.heapstate.rule=Host(`api.dev.heapstate.com`)"
         - "traefik.http.routers.heapstate.entrypoints=websecure"
         - "traefik.http.routers.heapstate.tls.certresolver=myresolver"
+    depends_on:
+      - 'mongodb'
+      - 'traefik'
+    links:
+      - mongodb

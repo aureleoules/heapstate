@@ -188,17 +188,32 @@ func Build(app shared.App) error {
 		return err
 	}
 
+	portStr := strconv.Itoa(port)
+
+	netConfig := network.NetworkingConfig{
+		EndpointsConfig: map[string]*network.EndpointSettings{
+			"traefik_default": &network.EndpointSettings{
+				NetworkID: os.Getenv("TRAEFIK_NETWORK_ID"),
+			},
+		},
+	}
 	dockerResponse, err := common.DockerClient.ContainerCreate(context.Background(), &container.Config{
 		Image:        app.Name,
 		ExposedPorts: exposedPorts,
+		Labels: map[string]string{
+			"traefik.enable": "true",
+			"traefik.http.routers." + app.Name + ".rule":             "Host(`" + app.Name + ".heapstate.com`)",
+			"traefik.http.routers." + app.Name + ".entrypoints":      "websecure",
+			"traefik.http.routers." + app.Name + ".tls.certresolver": "myresolver",
+		},
 	}, &container.HostConfig{
 		PortBindings: nat.PortMap{
-			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: strconv.Itoa(port)}},
+			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: portStr}},
 		},
 		Resources: container.Resources{
 			Memory: app.ContainerOptions.MaxRAM,
 		},
-	}, &network.NetworkingConfig{}, app.Name)
+	}, &netConfig, app.Name)
 
 	if err != nil {
 		build.SetStatus(shared.DeployError, "Could not deploy Docker container.")

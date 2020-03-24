@@ -1,8 +1,16 @@
 version: "3.3"
+
+networks:
+  web:
+    external:
+      name: traefik_default
+
 services:
   traefik:
     image: "traefik:v2.1"
     container_name: "traefik"
+    labels:
+        - "traefik.docker.network=traefik_default"
     command:
         - "--api.insecure=true"
         - "--providers.docker=true"
@@ -20,4 +28,12 @@ services:
     volumes:
         - "./letsencrypt:/letsencrypt"
         - "/var/run/docker.sock:/var/run/docker.sock:ro"
-        
+    networks:
+        - web
+        - default
+         
+  mongodb:
+    image: mvertes/alpine-mongo
+    container_name: "mongodb"
+    ports:
+      - "27017:27017"

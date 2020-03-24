@@ -2,6 +2,8 @@ package common
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"os"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -29,6 +31,10 @@ func InitDB() *mongo.Database {
 	}
 
 	db := client.Database(os.Getenv("MONGODB_DATABASE"))
+	if db == nil {
+		panic(errors.New("Couldn't connect to MongoDB"))
+	}
+	fmt.Println("INITIALIZED MONGODB")
 	DB = db
 	return db
 }
