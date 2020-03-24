@@ -1,0 +1,19 @@
+version: "3.3"
+services:
+  heapstate:
+    build: .
+    build: 
+        context: .
+        dockerfile: Dockerfile
+    ports:
+        - '9000:9000'
+    volumes:
+        - ./:/app
+    env_file:
+        - .env
+    container_name: "heapstate-dev"
+    labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.heapstate.rule=Host(`api.dev.heapstate.com`)"
+        - "traefik.http.routers.heapstate.entrypoints=websecure"
+        - "traefik.http.routers.heapstate.tls.certresolver=myresolver"
