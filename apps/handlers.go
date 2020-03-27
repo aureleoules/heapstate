@@ -7,6 +7,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/aureleoules/heapstate/builder"
@@ -15,6 +16,8 @@ import (
 	"github.com/aureleoules/heapstate/utils"
 	"github.com/docker/docker/api/types"
 	"github.com/gin-gonic/gin"
+	"github.com/taion809/haikunator"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -32,23 +35,12 @@ func newAppHandler(c *gin.Context) {
 		return
 	}
 
-	var baseURL string
-	switch app.Provider {
-	case shared.GitHubProvider:
-		baseURL = "github.com/"
-		break
-	case shared.GitLabProvider:
-		baseURL = "gitlab.com/"
-		break
-	case shared.BitBucketProvider:
-		baseURL = "bitbucket.org/"
-	}
-
-	// Set app repo url
-	app.URL = baseURL + app.Owner + "/" + app.Name
-	app.CompleteURL = "https://" + app.URL
+	app.URL = strings.ReplaceAll(app.CompleteURL, "https://", "")
 
 	app.UserID = utils.ExtractUserID(c)
+
+	h := haikunator.NewHaikunator()
+	app.Name = h.TokenHaikunate(10000)
 
 	err = app.Save()
 	if err != nil {

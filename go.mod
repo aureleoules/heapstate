@@ -33,8 +33,10 @@ require (
 	github.com/pierrec/lz4 v2.4.1+incompatible // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/sirupsen/logrus v1.4.2
+	github.com/taion809/haikunator v0.0.0-20150324135039-4e414e676fd1
 	github.com/ulikunitz/xz v0.5.7 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
+	github.com/yelinaung/go-haikunator v0.0.0-20150320004105-1249cae259af
 	go.mongodb.org/mongo-driver v1.3.1
 	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a // indirect

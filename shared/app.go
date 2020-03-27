@@ -22,12 +22,12 @@ type App struct {
 	ID     primitive.ObjectID `json:"id" bson:"_id"`
 	UserID primitive.ObjectID `json:"-" bson:"user_id"`
 
-	Token            string           `json:"token" validate:"required" bson:"token"`
+	Token            string           `json:"token" bson:"token"`
 	Provider         Provider         `json:"provider" bson:"provider"`
 	BuildOptions     BuildOptions     `json:"build_options" validate:"required" bson:"build_options"`
 	ContainerOptions ContainerOptions `json:"container_options" bson:"container_options"`
-	Owner            string           `json:"owner" validate:"required" bson:"owner"`
-	Name             string           `json:"name" validate:"required" bson:"name"`
+	Owner            string           `json:"owner" bson:"owner"`
+	Name             string           `json:"name" bson:"name"`
 
 	ContainerID string `json:"-" bson:"container_id"`
 	State       State  `json:"state" bson:"state"`

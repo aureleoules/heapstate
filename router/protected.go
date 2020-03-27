@@ -11,5 +11,4 @@ func handleProtected(r *gin.RouterGroup) {
 	users.HandleProtected(r.Group("/users"))
 	oauth.HandleProtected(r.Group("/oauth"))
 	apps.HandleProtected(r.Group("/apps"))
-
 }

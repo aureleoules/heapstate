@@ -210,6 +210,9 @@ func Build(app shared.App) error {
 		PortBindings: nat.PortMap{
 			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: portStr}},
 		},
+		RestartPolicy: container.RestartPolicy{
+			Name: "always",
+		},
 		Resources: container.Resources{
 			Memory: app.ContainerOptions.MaxRAM,
 		},
