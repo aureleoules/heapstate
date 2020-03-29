@@ -3,7 +3,7 @@
 
 > build and deploy your apps effortlessly
 
-<center><img src="examples/dashboard.png" width="600px"/></center>
+![](examples/dashboard.png)
 
 ## Get started
 
