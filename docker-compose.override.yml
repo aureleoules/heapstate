@@ -22,3 +22,17 @@ services:
       - 'traefik'
     links:
       - mongodb
+
+
+  frontend:
+    image: 'aureleoules/heapstate-frontend:latest'
+    ports:
+      - 6500:80
+    container_name: "heapstate-frontend"
+    labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.frontend.rule=Host(`app.heapstate.com`)"
+        - "traefik.http.routers.frontend.entrypoints=websecure"
+        - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+    depends_on:
+      - 'traefik'

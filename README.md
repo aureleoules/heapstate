@@ -12,15 +12,12 @@ $ git clone https://github.com/aureleoules/heapstate && cd heapstate
 $ sudo docker-compose up -d
 ```
 
-Heapstate will be available at [localhost:6000](http://localhost:6000).
+Heapstate will be available at [localhost:6500](http://localhost:6500).
 ## Development
 
 To run `heapstate` in a development environment:
 ```
-$ sudo docker-compose \ 
-    -f docker-compose.yml \
-    -f docker-compose.dev.yml \
-    up -d
+$ sudo docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 ```
 
 Heapstate's api will be listening on port `9000` by default.
