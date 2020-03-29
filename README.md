@@ -3,6 +3,8 @@
 
 > build and deploy your apps effortlessly
 
+<center><img src="examples/dashboard.png" width="600px"/></center>
+
 ## Get started
 
 Deploying `heapstate` itself is very easy.
