@@ -198,6 +198,13 @@ func Build(app shared.App) error {
 			},
 		},
 	}
+
+	var envVars []string
+
+	for _, v := range app.BuildOptions.Env {
+		envVars = append(envVars, v.Key+"="+v.Value)
+	}
+
 	dockerResponse, err := common.DockerClient.ContainerCreate(context.Background(), &container.Config{
 		Image:        app.Name,
 		ExposedPorts: exposedPorts,
@@ -207,6 +214,7 @@ func Build(app shared.App) error {
 			"traefik.http.routers." + app.Name + ".entrypoints":      "websecure",
 			"traefik.http.routers." + app.Name + ".tls.certresolver": "myresolver",
 		},
+		Env: envVars,
 	}, &container.HostConfig{
 		PortBindings: nat.PortMap{
 			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: portStr}},
