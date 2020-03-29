@@ -70,10 +70,11 @@ func fetchAppsHandler(c *gin.Context) {
 
 func fetchStatsHandler(c *gin.Context) {
 	name := c.Param("name")
+	userID := utils.ExtractUserID(c)
 
-	app, err := FetchApp(name)
+	app, err := FetchApp(name, userID)
 	if err != nil {
-		utils.Response(c, http.StatusInternalServerError, err, nil)
+		utils.Response(c, http.StatusNotFound, err, nil)
 		return
 	}
 
@@ -103,8 +104,9 @@ func fetchStatsHandler(c *gin.Context) {
 
 func fetchAppHandler(c *gin.Context) {
 	name := c.Param("name")
+	userID := utils.ExtractUserID(c)
 
-	app, err := FetchApp(name)
+	app, err := FetchApp(name, userID)
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
@@ -116,8 +118,9 @@ func fetchAppHandler(c *gin.Context) {
 
 func fetchBuildOptionsHandler(c *gin.Context) {
 	name := c.Param("name")
+	userID := utils.ExtractUserID(c)
 
-	app, err := FetchApp(name)
+	app, err := FetchApp(name, userID)
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
@@ -129,8 +132,9 @@ func fetchBuildOptionsHandler(c *gin.Context) {
 
 func deployHandler(c *gin.Context) {
 	name := c.Param("name")
+	userID := utils.ExtractUserID(c)
 
-	app, err := FetchApp(name)
+	app, err := FetchApp(name, userID)
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
@@ -148,8 +152,9 @@ func fetchBuildsHandler(c *gin.Context) {
 		utils.Response(c, http.StatusNotAcceptable, errors.New("invalid limit"), nil)
 		return
 	}
+	userID := utils.ExtractUserID(c)
 
-	id, err := GetAppID(name)
+	id, err := GetAppID(name, userID)
 	if err != nil {
 		utils.Response(c, http.StatusNotFound, err, nil)
 		return
@@ -172,8 +177,9 @@ func fetchBuildHandler(c *gin.Context) {
 		utils.Response(c, http.StatusNotAcceptable, errors.New("invalid id"), nil)
 		return
 	}
+	userID := utils.ExtractUserID(c)
 
-	build, err := GetBuild(objectID)
+	build, err := GetBuild(objectID, userID)
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
@@ -184,10 +190,11 @@ func fetchBuildHandler(c *gin.Context) {
 
 func fetchLogsHandler(c *gin.Context) {
 	name := c.Param("name")
+	userID := utils.ExtractUserID(c)
 
-	app, err := FetchApp(name)
+	app, err := FetchApp(name, userID)
 	if err != nil {
-		utils.Response(c, http.StatusInternalServerError, err, nil)
+		utils.Response(c, http.StatusNotFound, err, nil)
 		return
 	}
 
@@ -213,10 +220,11 @@ func fetchLogsHandler(c *gin.Context) {
 
 func fetchContainerOptionsHandler(c *gin.Context) {
 	name := c.Param("name")
+	userID := utils.ExtractUserID(c)
 
-	app, err := FetchApp(name)
+	app, err := FetchApp(name, userID)
 	if err != nil {
-		utils.Response(c, http.StatusInternalServerError, err, nil)
+		utils.Response(c, http.StatusNotFound, err, nil)
 		return
 	}
 
@@ -226,8 +234,9 @@ func fetchContainerOptionsHandler(c *gin.Context) {
 
 func startHandler(c *gin.Context) {
 	name := c.Param("name")
+	userID := utils.ExtractUserID(c)
 
-	app, err := FetchApp(name)
+	app, err := FetchApp(name, userID)
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
@@ -246,8 +255,9 @@ func startHandler(c *gin.Context) {
 
 func restartHandler(c *gin.Context) {
 	name := c.Param("name")
+	userID := utils.ExtractUserID(c)
 
-	app, err := FetchApp(name)
+	app, err := FetchApp(name, userID)
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
@@ -268,8 +278,9 @@ func restartHandler(c *gin.Context) {
 
 func stopHandler(c *gin.Context) {
 	name := c.Param("name")
+	userID := utils.ExtractUserID(c)
 
-	app, err := FetchApp(name)
+	app, err := FetchApp(name, userID)
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
@@ -295,13 +306,14 @@ func saveContainerOptionsHandler(c *gin.Context) {
 	var options shared.ContainerOptions
 	err := c.BindJSON(&options)
 	if err != nil {
-		utils.Response(c, http.StatusInternalServerError, err, nil)
+		utils.Response(c, http.StatusNotAcceptable, err, nil)
 		return
 	}
+	userID := utils.ExtractUserID(c)
 
-	app, err := FetchApp(name)
+	app, err := FetchApp(name, userID)
 	if err != nil {
-		utils.Response(c, http.StatusInternalServerError, err, nil)
+		utils.Response(c, http.StatusNotFound, err, nil)
 		return
 	}
 	err = app.SaveContainerOptions(options)

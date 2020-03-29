@@ -78,6 +78,7 @@ func Build(app shared.App) error {
 		CreatedAt: time.Now(),
 		Branch:    app.BuildOptions.Branch,
 		Logs:      []string{},
+		UserID:    app.UserID,
 	}
 
 	build.Status = shared.Building

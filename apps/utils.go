@@ -27,9 +27,10 @@ func FetchApps(userID primitive.ObjectID) ([]shared.App, error) {
 }
 
 // GetAppID of by name
-func GetAppID(name string) (primitive.ObjectID, error) {
+func GetAppID(name string, userID primitive.ObjectID) (primitive.ObjectID, error) {
 	r := common.DB.Collection(common.AppsCollection).FindOne(context.Background(), bson.M{
-		"name": name,
+		"name":    name,
+		"user_id": userID,
 	})
 
 	var app shared.App
@@ -41,9 +42,10 @@ func GetAppID(name string) (primitive.ObjectID, error) {
 }
 
 // FetchApp returns single app by name
-func FetchApp(name string) (shared.App, error) {
+func FetchApp(name string, id primitive.ObjectID) (shared.App, error) {
 	r := common.DB.Collection(common.AppsCollection).FindOne(context.Background(), bson.M{
-		"name": name,
+		"name":    name,
+		"user_id": id,
 	})
 
 	var app shared.App
@@ -92,9 +94,10 @@ func GetLatestBuild(appID primitive.ObjectID) (shared.Build, error) {
 }
 
 // GetBuild bu id
-func GetBuild(buildID primitive.ObjectID) (shared.Build, error) {
+func GetBuild(buildID primitive.ObjectID, userID primitive.ObjectID) (shared.Build, error) {
 	r := common.DB.Collection(common.BuildsCollection).FindOne(context.Background(), bson.M{
-		"_id": buildID,
+		"_id":     buildID,
+		"user_id": userID,
 	})
 	var build shared.Build
 	err := r.Decode(&build)

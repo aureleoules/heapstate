@@ -12,8 +12,9 @@ import (
 
 // Build struct
 type Build struct {
-	ID    primitive.ObjectID `json:"id" bson:"_id"`
-	AppID primitive.ObjectID `json:"app_id" bson:"app_id"`
+	ID     primitive.ObjectID `json:"id" bson:"_id"`
+	AppID  primitive.ObjectID `json:"app_id" bson:"app_id"`
+	UserID primitive.ObjectID `json:"user_id" bson:"user_id"`
 
 	Branch        string   `json:"branch" bson:"branch"`
 	CommitHash    string   `json:"commit_hash" bson:"commit_hash"`
