@@ -19,7 +19,7 @@ type Request struct {
 	Code string `json:"code"`
 }
 
-func exchangeGitHubTokenHandler(c *gin.Context) {
+func ExchangeGitHubTokenHandler(c *gin.Context) {
 	var req Request
 	c.BindJSON(&req)
 
