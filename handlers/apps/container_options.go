@@ -3,6 +3,7 @@ package apps
 import (
 	"net/http"
 
+	"github.com/aureleoules/heapstate/builder"
 	"github.com/aureleoules/heapstate/models"
 	"github.com/aureleoules/heapstate/utils"
 	"github.com/gin-gonic/gin"
@@ -42,6 +43,12 @@ func SaveContainerOptionsHandler(c *gin.Context) {
 	if err != nil {
 		utils.Response(c, http.StatusInternalServerError, err, nil)
 		return
+	}
+
+	// Rebuild container if app is running
+	if app.State == models.Running {
+		app.ContainerOptions = options
+		builder.Build(app)
 	}
 
 	utils.Response(c, http.StatusOK, nil, nil)
