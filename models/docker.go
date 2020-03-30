@@ -1,4 +1,4 @@
-package shared
+package models
 
 // ContainerStats struct
 type ContainerStats struct {

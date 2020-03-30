@@ -5,12 +5,13 @@ import (
 	"net/http"
 
 	jwt "github.com/appleboy/gin-jwt"
+	"github.com/aureleoules/heapstate/models"
 	"github.com/aureleoules/heapstate/utils"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func handleGetProfile(c *gin.Context) {
+func HandleGetProfile(c *gin.Context) {
 	id := utils.ExtractUserID(c)
 	log.Println("extract", id)
 
@@ -24,8 +25,8 @@ func handleGetProfile(c *gin.Context) {
 	return
 }
 
-func handleRegister(c *gin.Context) {
-	var user User
+func HandleRegister(c *gin.Context) {
+	var user models.User
 	c.BindJSON(&user)
 
 	err := user.Validate()
@@ -48,7 +49,7 @@ func handleRegister(c *gin.Context) {
 
 // Authenticator handler
 func Authenticator(c *gin.Context) (interface{}, error) {
-	var user User
+	var user models.User
 	c.BindJSON(&user)
 	u, err := RetrieveByEmail(user.Email)
 	if err != nil {
@@ -60,7 +61,7 @@ func Authenticator(c *gin.Context) (interface{}, error) {
 		return nil, jwt.ErrFailedAuthentication
 	}
 
-	return &User{
+	return &models.User{
 		ID:       u.ID,
 		Username: u.Username,
 		Email:    u.Email,

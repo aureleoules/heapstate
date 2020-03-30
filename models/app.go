@@ -1,12 +1,12 @@
-package shared
+package models
 
 import (
 	"context"
 	"time"
 
 	"github.com/aureleoules/heapstate/common"
+	"github.com/go-playground/validator"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"gopkg.in/go-playground/validator.v9"
 	"gopkg.in/mgo.v2/bson"
 )
 

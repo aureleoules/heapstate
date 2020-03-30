@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/aureleoules/heapstate/common"
-	"github.com/aureleoules/heapstate/shared"
+	"github.com/aureleoules/heapstate/models"
 	"github.com/aureleoules/heapstate/utils"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -72,8 +72,8 @@ func Clean() {
 }
 
 // Build app
-func Build(app shared.App) error {
-	build := shared.Build{
+func Build(app models.App) error {
+	build := models.Build{
 		AppID:     app.ID,
 		CreatedAt: time.Now(),
 		Branch:    app.BuildOptions.Branch,
@@ -81,23 +81,23 @@ func Build(app shared.App) error {
 		UserID:    app.UserID,
 	}
 
-	build.Status = shared.Building
+	build.Status = models.Building
 	build.Create()
-	app.SetState(shared.Stopped)
+	app.SetState(models.Stopped)
 
 	Clean()
 	/* Clone repo */
 	repoDir := os.Getenv("CLONE_REPO_DIR") + "/" + app.Name
 	r, err := CloneRepository(app.CompleteURL, app.BuildOptions.Branch, repoDir)
 	if err != nil {
-		build.SetStatus(shared.BuildError, "Could not clone repository.")
+		build.SetStatus(models.BuildError, "Could not clone repository.")
 
 		return err
 	}
 
 	ref, err := r.Head()
 	if err != nil {
-		build.SetStatus(shared.BuildError, "Could not get HEAD.")
+		build.SetStatus(models.BuildError, "Could not get HEAD.")
 
 		return err
 	}
@@ -105,7 +105,7 @@ func Build(app shared.App) error {
 	commit, err := r.CommitObject(ref.Hash())
 
 	if err != nil {
-		build.SetStatus(shared.BuildError, "Could not get latest commit.")
+		build.SetStatus(models.BuildError, "Could not get latest commit.")
 		return err
 	}
 
@@ -116,7 +116,7 @@ func Build(app shared.App) error {
 	err = MakeTarball(repoDir, tarballDir)
 	if err != nil {
 		log.Println(err)
-		build.SetStatus(shared.BuildError, "Could not build tarball.")
+		build.SetStatus(models.BuildError, "Could not build tarball.")
 
 		return err
 	}
@@ -125,7 +125,7 @@ func Build(app shared.App) error {
 	dockerBuildContext, err := os.Open(tarballDir)
 	if err != nil {
 
-		build.SetStatus(shared.BuildError, "Could not open tarball.")
+		build.SetStatus(models.BuildError, "Could not open tarball.")
 
 		return err
 	}
@@ -140,7 +140,7 @@ func Build(app shared.App) error {
 	resp, err := common.DockerClient.ImageBuild(context.Background(), dockerBuildContext, opt)
 	if err != nil {
 		fmt.Println(err)
-		build.SetStatus(shared.BuildError, "Could not build Docker image.")
+		build.SetStatus(models.BuildError, "Could not build Docker image.")
 
 		return err
 	}
@@ -153,7 +153,7 @@ func Build(app shared.App) error {
 		if err != nil && err == io.EOF {
 			break
 		} else if err != nil {
-			build.SetStatus(shared.BuildError, "Unexpected error")
+			build.SetStatus(models.BuildError, "Unexpected error")
 			return err
 		}
 
@@ -170,7 +170,7 @@ func Build(app shared.App) error {
 		build.Log(str)
 	}
 
-	build.SetStatus(shared.Building, "")
+	build.SetStatus(models.Building, "")
 
 	/* Delete previous docker container */
 	err = common.DockerClient.ContainerRemove(context.Background(), app.ContainerID, types.ContainerRemoveOptions{
@@ -185,7 +185,7 @@ func Build(app shared.App) error {
 
 	port, err := freeport.GetFreePort()
 	if err != nil {
-		build.SetStatus(shared.BuildError, "Could not find available port.")
+		build.SetStatus(models.BuildError, "Could not find available port.")
 		return err
 	}
 
@@ -228,14 +228,14 @@ func Build(app shared.App) error {
 	}, &netConfig, app.Name)
 
 	if err != nil {
-		build.SetStatus(shared.DeployError, "Could not deploy Docker container.")
+		build.SetStatus(models.DeployError, "Could not deploy Docker container.")
 		fmt.Println(err)
 		return err
 	}
 
 	err = app.SetContainerID(dockerResponse.ID)
 	if err != nil {
-		build.SetStatus(shared.BuildError, "Could not set container ID.")
+		build.SetStatus(models.BuildError, "Could not set container ID.")
 
 		return err
 	}
@@ -243,13 +243,13 @@ func Build(app shared.App) error {
 
 	err = common.DockerClient.ContainerStart(context.Background(), dockerResponse.ID, types.ContainerStartOptions{})
 	if err != nil {
-		build.SetStatus(shared.DeployError, "Could not start Docker container.")
+		build.SetStatus(models.DeployError, "Could not start Docker container.")
 
 		return err
 	}
 
-	build.SetStatus(shared.Deployed, "")
-	app.SetState(shared.Running)
+	build.SetStatus(models.Deployed, "")
+	app.SetState(models.Running)
 
 	return nil
 }
