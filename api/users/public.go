@@ -8,5 +8,4 @@ import (
 // HandlePub hanldes public routes
 func HandlePub(r *gin.RouterGroup) {
 	r.POST("/", users.HandleRegister)
-
 }

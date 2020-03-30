@@ -10,8 +10,8 @@ import (
 	"github.com/aureleoules/heapstate/api/users"
 	usersHandlers "github.com/aureleoules/heapstate/handlers/users"
 
+	"github.com/aureleoules/heapstate/api/oauth"
 	"github.com/aureleoules/heapstate/models"
-	"github.com/aureleoules/heapstate/oauth"
 	"github.com/aureleoules/heapstate/utils"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -100,7 +100,6 @@ func creater() *gin.Engine {
 		handlePub(publicApi)
 		handleProtected(api)
 	}
-
 	publicApi.POST("/authenticate", authMiddleware.LoginHandler)
 
 	return r

@@ -14,8 +14,6 @@ import (
 type User struct {
 	ID primitive.ObjectID `json:"id" bson:"_id"`
 
-	Credits uint64 `json:"credits" bson:"credits"`
-
 	Username string `json:"username" bson:"username"`
 	Email    string `json:"email" bson:"email" validate:"required,email"`
 	Password string `json:"password" bson:"password" validate:"required"`
@@ -29,7 +27,6 @@ type Profile struct {
 	ID        primitive.ObjectID `json:"id"`
 	Username  string             `json:"username"`
 	Email     string             `json:"email"`
-	Credits   uint64             `json:"credits"`
 	UpdatedAt time.Time          `json:"updated_at"`
 	CreatedAt time.Time          `json:"created_at"`
 }
@@ -63,7 +60,6 @@ func (u *User) Public() Profile {
 		Username:  u.Username,
 		Email:     u.Email,
 		UpdatedAt: u.UpdatedAt,
-		Credits:   u.Credits,
 		CreatedAt: u.CreatedAt,
 	}
 }
