@@ -122,11 +122,37 @@ func fetchBuildOptionsHandler(c *gin.Context) {
 
 	app, err := FetchApp(name, userID)
 	if err != nil {
-		utils.Response(c, http.StatusInternalServerError, err, nil)
+		utils.Response(c, http.StatusNotFound, err, nil)
 		return
 	}
 
 	utils.Response(c, http.StatusOK, nil, app.BuildOptions)
+	return
+}
+
+func saveBuildOptionsHandler(c *gin.Context) {
+	name := c.Param("name")
+
+	var options shared.BuildOptions
+	err := c.BindJSON(&options)
+	if err != nil {
+		utils.Response(c, http.StatusNotAcceptable, err, nil)
+		return
+	}
+	userID := utils.ExtractUserID(c)
+
+	app, err := FetchApp(name, userID)
+	if err != nil {
+		utils.Response(c, http.StatusNotFound, err, nil)
+		return
+	}
+	err = app.SaveBuildOptions(options)
+	if err != nil {
+		utils.Response(c, http.StatusInternalServerError, err, nil)
+		return
+	}
+
+	utils.Response(c, http.StatusOK, nil, nil)
 	return
 }
 

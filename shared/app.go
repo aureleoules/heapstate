@@ -91,6 +91,18 @@ func (app *App) SaveContainerOptions(options ContainerOptions) error {
 	return err
 }
 
+// SaveBuildOptions : set app build options
+func (app *App) SaveBuildOptions(options BuildOptions) error {
+	_, err := common.DB.Collection(common.AppsCollection).UpdateOne(context.Background(), bson.M{
+		"_id": app.ID,
+	}, bson.M{
+		"$set": bson.M{
+			"build_options": options,
+		},
+	})
+	return err
+}
+
 // Validate deployment
 func (app *App) Validate() error {
 	validate := validator.New()

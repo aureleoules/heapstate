@@ -15,6 +15,7 @@ func HandleProtected(r *gin.RouterGroup) {
 	r.POST("/:name/stop", stopHandler)
 
 	r.GET("/:name/buildoptions", fetchBuildOptionsHandler)
+	r.PUT("/:name/buildoptions", saveBuildOptionsHandler)
 
 	r.GET("/:name/builds", fetchBuildsHandler)
 	r.GET("/:name/builds/:id", fetchBuildHandler)
